@@ -1,4 +1,6 @@
-package com.ashutosh.jobApp.company;
+package com.ashutosh.jobApp.service;
+
+import com.ashutosh.jobApp.entity.Company;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package com.ashutosh.jobApp.company.impl;
+package com.ashutosh.jobApp.service.impl;
 
-import com.ashutosh.jobApp.company.Company;
-import com.ashutosh.jobApp.company.CompanyRepository;
-import com.ashutosh.jobApp.company.CompanyService;
+import com.ashutosh.jobApp.entity.Company;
+import com.ashutosh.jobApp.repository.CompanyRepository;
+import com.ashutosh.jobApp.service.CompanyService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -18,35 +18,34 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<Company> getAllCompanies() {
-        return companyRepository.findAll();
-    }
-
-    @Override
     public Company createCompany(Company company) {
         return companyRepository.save(company);
     }
 
     @Override
-    public void deleteCompany(Long id) {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("company with id : " + id + "Not found"));
-        companyRepository.delete(company);
-    }
-
-    @Override
-    public Company updateCompany(Company updatedCompany, Long id) {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("company with id : " + id + "Not found"));
-        company.setDescription(updatedCompany.getDescription());
-        company.setName(updatedCompany.getName());
-        return companyRepository.save(company);
+    public List<Company> getAllCompanies() {
+        return companyRepository.findAll();
     }
 
     @Override
     public Company getCompanyById(Long id) {
         return companyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("company with id : " + id + "Not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("company with id : " + id + " Not found"));
     }
+
+    @Override
+    public void deleteCompany(Long id) {
+        Company company = getCompanyById(id);
+        companyRepository.delete(company);
+    }
+
+    @Override
+    public Company updateCompany(Company updatedCompany, Long id) {
+        Company company = getCompanyById(id);
+        company.setDescription(updatedCompany.getDescription());
+        company.setName(updatedCompany.getName());
+        return companyRepository.save(company);
+    }
+
 
 }
