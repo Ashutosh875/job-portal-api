@@ -4,6 +4,7 @@ import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.repository.CompanyRepository;
 import com.ashutosh.jobApp.service.CompanyService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List<Company> getAllCompanies() {
-        return companyRepository.findAll();
+        return companyRepository.findAllWithReviews();
     }
 
     @Override
@@ -33,12 +34,14 @@ public class CompanyServiceImpl implements CompanyService {
                 .orElseThrow(() -> new ResourceNotFoundException("company with id : " + id + " Not found"));
     }
 
+    @Transactional
     @Override
     public void deleteCompany(Long id) {
         Company company = getCompanyById(id);
         companyRepository.delete(company);
     }
 
+    @Transactional
     @Override
     public Company updateCompany(Company updatedCompany, Long id) {
         Company company = getCompanyById(id);

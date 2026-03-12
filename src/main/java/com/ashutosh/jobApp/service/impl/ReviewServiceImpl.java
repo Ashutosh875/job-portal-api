@@ -6,6 +6,7 @@ import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.repository.ReviewRepository;
 import com.ashutosh.jobApp.service.ReviewService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("No review Found"));
     }
 
+    @Transactional
     @Override
     public Review postReview(Long companyId, Review review) {
 
@@ -45,6 +47,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("No review Found"));
     }
 
+    @Transactional
     @Override
     public Review updateReviewById(Long reviewId, Review updatedReview) {
 
@@ -57,6 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewRepository.save(review);
     }
 
+    @Transactional
     @Override
     public void deleteReview(Long reviewId) {
         Review review = getReviewById(reviewId);

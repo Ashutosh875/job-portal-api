@@ -3,6 +3,7 @@ package com.ashutosh.jobApp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class Company {
     @OneToMany(mappedBy = "company" ,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @JsonIgnore
     private List<Review> reviews;
 
     public void addReview(Review review){

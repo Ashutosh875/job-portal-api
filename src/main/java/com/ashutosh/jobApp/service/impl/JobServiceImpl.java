@@ -8,6 +8,8 @@ import com.ashutosh.jobApp.service.CompanyService;
 import com.ashutosh.jobApp.service.JobService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class JobServiceImpl implements JobService {
         this.companyService = companyService;
     }
 
+    @Transactional
     @Override
     public Job createJob(Job job , Long companyId) {
 
@@ -33,8 +36,8 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<Job> findAllJobs() {
-        return jobRepository.findAll();
+    public Page<Job> findAllJobs(Pageable pageable) {
+        return jobRepository.findAll(pageable);
     }
 
     @Override
@@ -49,6 +52,7 @@ public class JobServiceImpl implements JobService {
         return jobRepository.findAllByCompanyId(companyId);
     }
 
+    @Transactional
     @Override
     public Job updateJobById(Job updatedjob , Long jobId) {
 
@@ -63,10 +67,26 @@ public class JobServiceImpl implements JobService {
         return jobRepository.save(job);
     }
 
+    @Transactional
     @Override
     public void deleteJobById(Long jobId) {
         Job job = findJobById(jobId);
         jobRepository.delete(job);
+    }
+
+    @Override
+    public Page<Job> findJobByLocation(String location , Pageable pageable) {
+        return jobRepository.findJobsByLocation(location,pageable);
+    }
+
+    @Override
+    public Page<Job> findJobByMinSalary(Long minSalary , Pageable pageable) {
+        return jobRepository.findJobsByMinSalary(minSalary,pageable);
+    }
+
+    @Override
+    public Page<Job> findJobByTitle(String title,Pageable pageable) {
+        return jobRepository.findJobsByTitle(title,pageable);
     }
 
 

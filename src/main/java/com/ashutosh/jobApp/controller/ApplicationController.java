@@ -36,13 +36,4 @@ public class ApplicationController {
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
-
-//    @GetMapping("/applicants/{applicantId}/jobs")
-//    public ResponseEntity<List<Job>> applicantAllJobs(@PathVariable Long applicantId){
-//
-//    }
-
-
-
-
 }

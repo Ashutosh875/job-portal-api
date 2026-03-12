@@ -3,9 +3,13 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.service.JobService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -29,12 +33,38 @@ public class JobController {
                 .body(jobService.createJob(job,companyId));
     }
 
-    // get all jobs by id
+    // get all jobs
     @GetMapping("/jobs")
-    public ResponseEntity<List<Job>> findAllJobs(){
+    public ResponseEntity<Page<Job>> findAllJobs(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Long minSalary,
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        Pageable pageable = PageRequest.of(page , size);
+
+        if(location != null && minSalary == null && title == null){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(jobService.findJobByLocation(location,pageable));
+        }
+
+        if(location == null && minSalary != null && title == null){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(jobService.findJobByMinSalary(minSalary,pageable));
+        }
+
+        if(location == null && minSalary == null && title != null){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(jobService.findJobByTitle(title,pageable));
+        }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobService.findAllJobs());
+                .body(jobService.findAllJobs(pageable));
     }
 
     // get job by job id

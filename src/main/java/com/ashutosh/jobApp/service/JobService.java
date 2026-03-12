@@ -1,6 +1,8 @@
 package com.ashutosh.jobApp.service;
 
 import com.ashutosh.jobApp.entity.Job;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -8,7 +10,7 @@ public interface JobService {
 
     Job createJob(Job job , Long companyId);
 
-    List<Job> findAllJobs();
+    Page<Job> findAllJobs(Pageable pageable);
 
     Job findJobById(Long jobId);
 
@@ -17,4 +19,8 @@ public interface JobService {
     Job updateJobById(Job job , Long jobId);
 
     void deleteJobById(Long jobId);
+
+    Page<Job> findJobByLocation(String location, Pageable pageable);
+    Page<Job> findJobByMinSalary(Long minSalary, Pageable pageable);
+    Page<Job> findJobByTitle(String title, Pageable pageable);
 }

@@ -19,7 +19,6 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "company_id")
-    @JsonIgnore
     private Company company;
 
     public Review() {

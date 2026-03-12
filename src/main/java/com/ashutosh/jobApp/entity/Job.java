@@ -18,8 +18,8 @@ public class Job {
     private Long id;
     private String title;
     private String description;
-    private String minSalary;
-    private String maxSalary;
+    private Long minSalary;
+    private Long maxSalary;
     private String location;
 
     public Job() {

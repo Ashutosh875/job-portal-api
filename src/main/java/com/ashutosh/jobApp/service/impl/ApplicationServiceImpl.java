@@ -6,6 +6,7 @@ import com.ashutosh.jobApp.repository.JobRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
 import com.ashutosh.jobApp.service.ApplicationService;
 import com.ashutosh.jobApp.service.JobService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         this.jobRepository = jobRepository;
     }
 
+    @Transactional
     @Override
     public Job applyToJob(Long applicantId, Long jobId) {
 
@@ -32,6 +34,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         return jobRepository.save(job);
     }
 
+    @Transactional
     @Override
     public void withdrawApplication(Long applicantId, Long jobId) {
 
