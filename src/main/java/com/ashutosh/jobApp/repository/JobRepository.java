@@ -12,8 +12,6 @@ import java.util.List;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
 
-    Page<Job> findAll(Pageable pageable);
-
     List<Job> findAllByCompanyId(Long companyId);
 
     @Query("SELECT j FROM Job j WHERE j.location = :location")

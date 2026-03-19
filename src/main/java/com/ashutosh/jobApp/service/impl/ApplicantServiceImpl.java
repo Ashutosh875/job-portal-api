@@ -4,33 +4,33 @@ import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.repository.ApplicantRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
-
 @Service
+@RequiredArgsConstructor
 public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
 
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository) {
-        this.applicantRepository = applicantRepository;
-    }
-
     @Override
+    @Transactional
     public Applicant createApplicant(Applicant applicant) {
         return applicantRepository.save(applicant);
     }
 
-
     @Override
+    @Transactional(readOnly = true)
     public Applicant getApplicantById(Long applicantId) {
         return applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new ResourceNotFoundException("No applicant found with id : " + applicantId));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public Applicant updateApplicant(Applicant updatedApplicant, Long applicantId) {
 
@@ -43,10 +43,11 @@ public class ApplicantServiceImpl implements ApplicantService {
         return applicantRepository.save(applicant);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public void deleteApplicant(Long applicantId){
         Applicant applicant = getApplicantById(applicantId);
-        applicantRepository.delete(applicant);
+        applicant.setActive(false);
+        applicantRepository.save(applicant);
     }
 }

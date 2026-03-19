@@ -3,6 +3,7 @@ package com.ashutosh.jobApp.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Applicant {
+@SQLRestriction("is_active = false")
+public class Applicant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +21,9 @@ public class Applicant {
     private String name;
     private Integer experience;
     private String jobTitle;
+
+    @Column(nullable = false)
+    private boolean isActive = true;
 
     @ManyToMany(mappedBy = "applicants",
             cascade = {CascadeType.PERSIST , CascadeType.MERGE})

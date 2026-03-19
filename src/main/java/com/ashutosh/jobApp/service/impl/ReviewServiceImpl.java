@@ -6,28 +6,26 @@ import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.repository.ReviewRepository;
 import com.ashutosh.jobApp.service.ReviewService;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final CompanyService companyService;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, CompanyService companyService) {
-        this.reviewRepository = reviewRepository;
-        this.companyService = companyService;
-    }
-
+    @Transactional(readOnly = true)
     @Override
-    public List<Review> getAllReviews(Long companyId) {
-        Optional<List<Review>> reviews = Optional.ofNullable(reviewRepository.findByCompanyId(companyId));
-        return reviews
-                .orElseThrow(() -> new ResourceNotFoundException("No review Found"));
+    public Page<Review> getAllReviews(Long companyId , Pageable pageable) {
+
+        return reviewRepository.findByCompanyId(companyId , pageable);
     }
 
     @Transactional
@@ -41,13 +39,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Review getReviewById(Long reviewId) {
 
         return reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("No review Found"));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public Review updateReviewById(Long reviewId, Review updatedReview) {
 
@@ -60,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewRepository.save(review);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public void deleteReview(Long reviewId) {
         Review review = getReviewById(reviewId);

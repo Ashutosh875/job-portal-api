@@ -2,11 +2,14 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.service.CompanyService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/companies")
@@ -26,10 +29,20 @@ public class CompanyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Company>> getAllCompanies(){
+    public ResponseEntity<Page<Company>> getAllCompanies(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "5") int size,
+                                                         @RequestParam(defaultValue = "id") String sortBy,
+                                                         @RequestParam(defaultValue = "asc") String sortDir){
+
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page , size , sort);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(companyService.getAllCompanies());
+                .body(companyService.getAllCompanies(pageable));
     }
 
     @GetMapping("/{id}")

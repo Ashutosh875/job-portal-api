@@ -6,23 +6,25 @@ import com.ashutosh.jobApp.repository.JobRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
 import com.ashutosh.jobApp.service.ApplicationService;
 import com.ashutosh.jobApp.service.JobService;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicantService applicantService;
     private final JobService jobService;
     private final JobRepository jobRepository;
 
-    public ApplicationServiceImpl(ApplicantService applicantService, JobService jobService, JobRepository jobRepository) {
-        this.applicantService = applicantService;
-        this.jobService = jobService;
-        this.jobRepository = jobRepository;
-    }
 
-    @Transactional
+    @Transactional(
+            propagation = Propagation.REQUIRED,
+            isolation = Isolation.REPEATABLE_READ
+    )
     @Override
     public Job applyToJob(Long applicantId, Long jobId) {
 
@@ -34,7 +36,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         return jobRepository.save(job);
     }
 
-    @Transactional
+    @Transactional(
+            propagation = Propagation.REQUIRED,
+            isolation = Isolation.REPEATABLE_READ
+    )
     @Override
     public void withdrawApplication(Long applicantId, Long jobId) {
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-public class Job {
+public class Job extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

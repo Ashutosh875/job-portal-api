@@ -3,21 +3,25 @@ package com.ashutosh.jobApp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
 @Setter
 @Getter
 @Entity
-public class Company {
+@SQLRestriction("is_active = true")
+public class Company extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
+
+    @Column(nullable = false)
+    private boolean isActive = true;
 
     public Company() {
     }
