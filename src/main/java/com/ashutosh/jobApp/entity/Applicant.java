@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@SQLRestriction("is_active = false")
+@SQLRestriction("is_active = true")
 public class Applicant extends BaseEntity {
 
     @Id

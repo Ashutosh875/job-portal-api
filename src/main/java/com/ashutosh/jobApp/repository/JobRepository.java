@@ -22,4 +22,8 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Query("SELECT j FROM Job j WHERE LOWER(j.title) LIKE LOWER(CONCAT('%', :title , '%'))")
     Page<Job> findJobsByTitle(@Param("title") String title , Pageable pageable);
+
+    @Query("SELECT j FROM Job j JOIN j.applicants a WHERE a.id = :applicantId")
+    Page<Job> findJobsByApplicantId(@Param("applicantId") Long applicantId, Pageable pageable);
+
 }
