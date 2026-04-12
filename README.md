@@ -4,30 +4,37 @@ A production-style backend system built with Java and Spring Boot, based on plat
 
 ## Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| Java 17 | Core language |
-| Spring Boot 3.x | Application framework |
-| Spring Data JPA | Database abstraction layer |
-| Hibernate | JPA implementation / ORM |
-| PostgreSQL | Relational database |
-| Maven | Build tool |
-| Postman | API testing |
-| Git & GitHub | Version control |
+| Technology      | Purpose                           |
+|-----------------|-----------------------------------|
+| Java 21         | Core language                     |
+| Spring Boot 4.x | Application framework             |
+| Spring Data JPA | Database abstraction layer        |
+| Spring Security | Security layer                    |
+| JJWT 0.13.x     | JWT token generation & validation |
+| Hibernate       | JPA implementation / ORM          |
+| PostgreSQL       | Relational database               |
+| Maven           | Build tool                        |
+| Postman         | API testing                       |
+| Git & GitHub    | Version control                   |
 
 ## Entity Diagram
 
 ```
-Company
-  ├── id, name, description, isActive, createdAt, updatedAt
+User
+  ├── id, email, password, role
   │
-  ├── @OneToMany ──► Job
-  │                    ├── id, title, description, minSalary, maxSalary, location
-  │                    └── @ManyToMany ──► Applicant
-  │                                         └── id, name, experience, jobTitle , isActive
+  ├── @OneToOne ──► Applicant
+  │                   ├── id, name, experience, jobTitle, isActive
+  │                   └── @ManyToMany ──► Job
+  │                                        ├── id, title, description, minSalary, maxSalary, location
+  │                                        └── @ManyToOne ──► Company
   │
-  └── @OneToMany ──► Review
-                       └── id, title, description, rating
+  └── @OneToOne ──► Company
+                      ├── id, name, description, isActive
+                      ├── @OneToMany ──► Job
+                      │                   └── id, title, description, minSalary, maxSalary, location
+                      └── @OneToMany ──► Review
+                                          └── id, title, description, rating
 ```
  
 ---
@@ -83,6 +90,14 @@ Company
 | DELETE | `/api/applicants/{applicantId}/jobs/{jobId}` | Withdraw application |
 | GET | `/api/applicants/{applicantId}/jobs` | Get jobs applied by applicant |
 | GET | `/api/jobs/{jobId}/applicants` | Get applicants for a job |
+
+### Authentication
+
+| Method | Endpoint                   | Description        |
+|---|----------------------------|--------------------|
+| POST | `/auth/register/applicant` | register applicant |
+| GET | `/auth/company/company`    | register company   |
+| GET | `/auth/login`              | login              |
  
 ---
 
@@ -102,7 +117,7 @@ GET /api/jobs?location=Delhi&page=0&size=5
 ## Setup & Run Locally
 
 ### Prerequisites
-- Java 17+
+- Java 21+
 - PostgreSQL
 - Maven
 
@@ -126,6 +141,9 @@ spring.datasource.username=your_username
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+jwt.secret=your_secret_key
+jwt.expiration=your_custom_expiration
 ```
 
 **4. Run the application**
@@ -149,6 +167,12 @@ src/main/java/com/ashutosh/jobApp/
 ├── repository/        # Spring Data JPA repositories
 ├── service/           # Service interfaces
 │   └── impl/          # Service implementations
+├── dto/               # dtos
+├── enums/             # enums - roles
+├── security/          # Security package
+    └── filter/        # Security filters
+    └── util/          # Security utils
+    └── Security config 
 └── exception/         # Custom exceptions
 ```
  
@@ -161,7 +185,6 @@ src/main/java/com/ashutosh/jobApp/
 - [ ] Refactor GlobalExceptionHandler
 - [ ] Add Bean Validation on request bodies
 - [ ] Add Swagger/OpenAPI documentation
-- [ ] Add Spring Security + JWT authentication
 - [ ] Write unit and integration tests
 
 ## Author
