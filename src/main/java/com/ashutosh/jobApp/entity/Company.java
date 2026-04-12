@@ -3,6 +3,7 @@ package com.ashutosh.jobApp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
 @SQLRestriction("is_active = true")
 public class Company extends BaseEntity{
 
@@ -23,9 +25,9 @@ public class Company extends BaseEntity{
     @Column(nullable = false)
     private boolean isActive = true;
 
-    public Company() {
-    }
-
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // one-to-many relation with job
     @OneToMany(mappedBy = "company",

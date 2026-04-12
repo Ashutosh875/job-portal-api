@@ -2,6 +2,7 @@ package com.ashutosh.jobApp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @SQLRestriction("is_active = true")
 public class Applicant extends BaseEntity {
 
@@ -25,12 +27,12 @@ public class Applicant extends BaseEntity {
     @Column(nullable = false)
     private boolean isActive = true;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @ManyToMany(mappedBy = "applicants",
             cascade = {CascadeType.PERSIST , CascadeType.MERGE})
     private List<Job> jobs = new ArrayList<>();
-
-    public Applicant(){
-    }
-
 
 }
