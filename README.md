@@ -94,10 +94,10 @@ User
 ### Authentication
 
 | Method | Endpoint                   | Description        |
-|---|----------------------------|--------------------|
-| POST | `/auth/register/applicant` | register applicant |
-| GET | `/auth/company/company`    | register company   |
-| GET | `/auth/login`              | login              |
+|--------|----------------------------|--------------------|
+| POST   | `/auth/register/applicant` | register applicant |
+| POST   | `/auth/company/company`    | register company   |
+| POST   | `/auth/login`              | login              |
  
 ---
 
