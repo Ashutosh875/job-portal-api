@@ -8,12 +8,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface ApplicationService {
 
-    Job applyToJob(Long applicantId, Long jobId);
+    Job applyToJob(Long jobId);
 
-    void withdrawApplication(Long applicantId, Long jobId);
+    void withdrawApplication(Long jobId);
 
 
-    Page<Job> getJobsForApplicant(Long applicantId, Pageable pageable);
+    Page<Job> getApplicationsOfApplicant(Pageable pageable);
 
     Page<Applicant> getApplicantForJob(Long jobId, Pageable pageable);
 }

@@ -43,63 +43,60 @@ User
 
 ### Company
 
+### Authentication
+
 | Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/companies` | Create a company |
-| GET | `/api/companies` | Get all companies (paginated) |
+|--------|----------|-------------|
+| POST | `/api/auth/register/applicant` | Register as applicant |
+| POST | `/api/auth/register/company` | Register as company |
+| POST | `/api/auth/login` | Login |
+
+### Applicants
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/api/applicants/profile` | Update applicant profile |
+| GET | `/api/applicants/{applicantId}` | Get applicant by ID |
+| DELETE | `/api/applicants/profile` | Delete applicant |
+
+### Companies
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/api/companies/profile` | Update company profile | 
+| GET | `/api/companies` | Get all companies|
 | GET | `/api/companies/{id}` | Get company by ID |
-| PUT | `/api/companies/{id}` | Update company |
-| DELETE | `/api/companies/{id}` | Soft delete company |
+| DELETE | `/api/companies/profile` | Delete company | 
 
-### Job
+### Jobs
 
 | Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/companies/{companyId}/jobs` | Create job under a company |
-| GET | `/api/jobs` | Get all jobs (paginated + filtered) |
+|--------|----------|-------------|
+| POST | `/api/companies/jobs` | Create job | 
+| GET | `/api/jobs` | Get all jobs |
 | GET | `/api/jobs/{jobId}` | Get job by ID |
 | GET | `/api/companies/{companyId}/jobs` | Get all jobs by company |
 | PUT | `/api/jobs/{jobId}` | Update job |
 | DELETE | `/api/jobs/{jobId}` | Delete job |
 
-### Review
+### Applications
 
 | Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/companies/{companyId}/reviews` | Post a review for a company |
-| GET | `/api/companies/{companyId}/reviews` | Get all reviews (paginated) |
-| GET | `/api/reviews/{reviewId}` | Get review by ID |
-| PUT | `/api/reviews/{reviewId}` | Update review |
-| DELETE | `/api/reviews/{reviewId}` | Delete review |
-
-### Applicant
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/applicants` | Create applicant |
-| GET | `/api/applicants` | Get all applicants |
-| GET | `/api/applicants/{id}` | Get applicant by ID |
-| PUT | `/api/applicants/{id}` | Update applicant |
-| DELETE | `/api/applicants/{id}` | Soft delete applicant |
-
-### Application (ManyToMany)
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/applicants/{applicantId}/jobs/{jobId}` | Apply to a job |
-| DELETE | `/api/applicants/{applicantId}/jobs/{jobId}` | Withdraw application |
-| GET | `/api/applicants/{applicantId}/jobs` | Get jobs applied by applicant |
+|--------|----------|-------------|
+| POST | `/api/jobs/{jobId}/apply` | Apply to job |
+| DELETE | `/api/jobs/{jobId}/withdraw` | Withdraw application |
+| GET | `/api/applicants/my-applications` | Get my applications |
 | GET | `/api/jobs/{jobId}/applicants` | Get applicants for a job |
 
-### Authentication
+### Reviews
 
-| Method | Endpoint                   | Description        |
-|--------|----------------------------|--------------------|
-| POST   | `/auth/register/applicant` | register applicant |
-| POST   | `/auth/company/company`    | register company   |
-| POST   | `/auth/login`              | login              |
- 
----
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/companies/{companyId}/reviews` | Get all reviews (paginated) |
+| POST | `/api/companies/{companyId}/reviews` | Post a review |
+| GET | `/api/reviews/{reviewId}` | Get review by ID |
+| PUT | `/api/reviews/{reviewId}` | Update review |
+| DELETE | `/api/reviews/{reviewId}` | Delete review | 
 
 ## Search, Filter & Pagination
 

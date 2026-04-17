@@ -2,6 +2,7 @@ package com.ashutosh.jobApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +11,13 @@ import java.util.List;
 
 @Setter
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true , callSuper = false)
 @Entity
 public class Job extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     private String title;
     private String description;

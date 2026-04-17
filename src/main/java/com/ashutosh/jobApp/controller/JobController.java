@@ -3,12 +3,14 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.service.JobService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -16,25 +18,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class JobController {
 
     private final JobService jobService;
 
-    public JobController(JobService jobService) {
-        this.jobService = jobService;
-    }
-
-
-    // create job with company id
-    @PostMapping("/companies/{companyId}/jobs")
-    public ResponseEntity<Job> createJob(@RequestBody Job job,
-                                         @PathVariable Long companyId){
+    @PostMapping("/companies/jobs")
+    @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
+    public ResponseEntity<Job> createJob(@RequestBody Job job){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(jobService.createJob(job,companyId));
+                .body(jobService.postJob(job));
     }
 
-    // get all jobs
     @GetMapping("/jobs")
     public ResponseEntity<Page<Job>> findAllJobs(
             @RequestParam(required = false) String location,
@@ -74,7 +70,6 @@ public class JobController {
                 .body(jobService.findAllJobs(pageable));
     }
 
-    // get job by job id
     @GetMapping("/jobs/{jobId}")
     public ResponseEntity<Job> findJobById(@PathVariable Long jobId){
         return ResponseEntity
@@ -82,7 +77,7 @@ public class JobController {
                 .body(jobService.findJobById(jobId));
     }
 
-    // get all jobs by company id
+
     @GetMapping("/companies/{companyId}/jobs")
     public ResponseEntity<List<Job>> findAllJobsByCompany(@PathVariable Long companyId){
         return ResponseEntity
@@ -91,6 +86,7 @@ public class JobController {
     }
 
     @PutMapping("/jobs/{jobId}")
+    @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
     public ResponseEntity<Job> updateJob(@RequestBody Job job,
                                          @PathVariable Long jobId){
         return ResponseEntity
@@ -99,6 +95,7 @@ public class JobController {
     }
 
     @DeleteMapping("/jobs/{jobId}")
+    @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
     public ResponseEntity<String> deleteJob(@PathVariable Long jobId){
         jobService.deleteJobById(jobId);
         return ResponseEntity

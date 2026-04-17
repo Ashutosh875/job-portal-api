@@ -2,6 +2,7 @@ package com.ashutosh.jobApp.entity;
 
 import com.ashutosh.jobApp.enums.Role;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,12 +17,14 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true , callSuper = false)
 @NoArgsConstructor
 @Table(name = "my_user")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(unique = true , nullable = false)

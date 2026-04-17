@@ -2,25 +2,24 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.service.ReviewService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
-
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
 
     @GetMapping("/companies/{companyId}/reviews")
     public ResponseEntity<Page<Review>> getAllReviews(@PathVariable Long companyId,
@@ -41,6 +40,7 @@ public class ReviewController {
     }
 
     @PostMapping("/companies/{companyId}/reviews")
+    @PreAuthorize("hasRole('APPLICANT')")
     public  ResponseEntity<Review> postReview(@PathVariable Long companyId ,
                                              @RequestBody Review review){
         return ResponseEntity
@@ -56,6 +56,7 @@ public class ReviewController {
     }
 
     @PutMapping("/reviews/{reviewId}")
+    @PreAuthorize("hasRole('APPLICANT')")
     public ResponseEntity<Review> updateReviewById(@PathVariable Long reviewId,
                                                    @RequestBody Review review){
         return ResponseEntity
@@ -64,6 +65,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/reviews/{reviewId}")
+    @PreAuthorize("hasAnyRole('APPLICANT' , 'ADMIN')")
     public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId){
         reviewService.deleteReview(reviewId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface JobService {
 
-    Job createJob(Job job , Long companyId);
+    Job postJob(Job job);
 
     Page<Job> findAllJobs(Pageable pageable);
 

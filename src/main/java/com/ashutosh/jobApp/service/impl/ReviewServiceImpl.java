@@ -1,6 +1,8 @@
 package com.ashutosh.jobApp.service.impl;
 
+import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Company;
+import com.ashutosh.jobApp.service.ApplicantService;
 import com.ashutosh.jobApp.service.CompanyService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.entity.Review;
@@ -9,6 +11,7 @@ import com.ashutosh.jobApp.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final CompanyService companyService;
+    private final ApplicantService applicantService;
 
     @Transactional(readOnly = true)
     @Override
@@ -28,10 +32,12 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewRepository.findByCompanyId(companyId , pageable);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public Review postReview(Long companyId, Review review) {
 
+        Applicant applicant = applicantService.getAuthenticatedApplicant();
+        review.setApplicant(applicant);
         Company company = companyService.getCompanyById(companyId);
         company.addReview(review);
 
@@ -50,7 +56,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review updateReviewById(Long reviewId, Review updatedReview) {
 
+        Applicant applicant = applicantService.getAuthenticatedApplicant();
+
         Review review = getReviewById(reviewId);
+
+        if(!applicant.getId().equals(review.getApplicant().getId())){
+            throw new AccessDeniedException("No Access To Update this Review");
+        }
 
         review.setDescription(updatedReview.getDescription());
         review.setRating(updatedReview.getRating());
@@ -62,7 +74,15 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public void deleteReview(Long reviewId) {
+
+        Applicant applicant = applicantService.getAuthenticatedApplicant();
+
         Review review = getReviewById(reviewId);
+
+        if(!applicant.getId().equals(review.getApplicant().getId())){
+            throw new AccessDeniedException("No Access To Update this Review");
+        }
+
         reviewRepository.delete(review);
     }
 

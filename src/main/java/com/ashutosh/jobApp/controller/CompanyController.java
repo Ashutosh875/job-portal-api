@@ -1,31 +1,33 @@
 package com.ashutosh.jobApp.controller;
 
+import com.ashutosh.jobApp.dto.CompanyProfileRequest;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.service.CompanyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/companies")
+@RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyService companyService;
 
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
-    }
-
-    @PostMapping
-    public ResponseEntity<Company> createCompany(@RequestBody Company company){
+    @PutMapping("/profile")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<Company> updateProfile(@RequestBody
+                                                     CompanyProfileRequest request){
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(companyService.createCompany(company));
+                .status(HttpStatus.OK)
+                .body(companyService.updateCompanyProfile(request));
     }
 
     @GetMapping
@@ -52,19 +54,13 @@ public class CompanyController {
                 .body(companyService.getCompanyById(id));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCompany(@PathVariable Long id){
-        companyService.deleteCompany(id);
+    @DeleteMapping("/profile")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<String> deleteCompany(){
+        companyService.deleteCompany();
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Company> updateCompany(@RequestBody Company company , @PathVariable Long id){
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(companyService.updateCompany(company , id));
     }
 
 }
