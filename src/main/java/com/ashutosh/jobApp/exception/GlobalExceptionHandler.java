@@ -1,5 +1,6 @@
 package com.ashutosh.jobApp.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,34 +8,70 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e){
-        return new ResponseEntity<>(e.getMessage() , HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException e ,
+                                                                         HttpServletRequest request){
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error , HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handleDatabaseException(DataAccessException ex){
-        return new ResponseEntity<>("Internal error occurred" , HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handleDatabaseException(DataAccessException e ,
+                                                                 HttpServletRequest request){
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "A database error occurred",
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error , HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<String> handleEmailAlreadyExistsException(EmailAlreadyExistsException e){
-        return new ResponseEntity<>(e.getMessage() , HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException e,
+                                                                    HttpServletRequest request){
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error , HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException e){
-        return new ResponseEntity<>("Invalid Username or Password" , HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e,
+                                                                HttpServletRequest request){
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error , HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e){
-        return new ResponseEntity<>("Access Denied 403" , HttpStatus.FORBIDDEN);
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericExceptions(Exception e ,
+                                                                 HttpServletRequest request){
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Something Went Wrong",
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error , HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

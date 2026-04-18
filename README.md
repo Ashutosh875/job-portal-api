@@ -41,8 +41,6 @@ User
 
 ## API Endpoints
 
-### Company
-
 ### Authentication
 
 | Method | Endpoint | Description |
