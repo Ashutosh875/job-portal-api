@@ -1,16 +1,17 @@
 package com.ashutosh.jobApp.service.impl;
 
-import com.ashutosh.jobApp.dto.ApplicantProfileRequest;
+import com.ashutosh.jobApp.dto.request.ApplicantRequestDto;
+import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.User;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
+import com.ashutosh.jobApp.mapper.ApplicantMapper;
 import com.ashutosh.jobApp.repository.ApplicantRepository;
 import com.ashutosh.jobApp.repository.UserRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
     private final UserRepository userRepository;
+    private final ApplicantMapper applicantMapper;
 
     public Applicant getAuthenticatedApplicant(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -33,22 +35,25 @@ public class ApplicantServiceImpl implements ApplicantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Applicant Not Found"));
     }
 
+    @Override
     @Transactional
-    public Applicant updateApplicantProfile(ApplicantProfileRequest applicantProfileRequest){
+    public ApplicantResponseDto updateApplicantProfile(ApplicantRequestDto applicantRequestDto){
 
         Applicant applicant = getAuthenticatedApplicant();
 
-        applicant.setName(applicantProfileRequest.getName());
-        applicant.setExperience(applicantProfileRequest.getExperience());
-        applicant.setJobTitle(applicantProfileRequest.getJobTitle());
+        applicant.setName(applicantRequestDto.getName());
+        applicant.setExperience(applicantRequestDto.getExperience());
+        applicant.setJobTitle(applicantRequestDto.getJobTitle());
 
-        return applicantRepository.save(applicant);
+        return applicantMapper
+                .toResponseDto(applicantRepository.save(applicant));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Applicant getApplicantById(Long applicantId) {
+    public ApplicantResponseDto getApplicantById(Long applicantId) {
         return applicantRepository.findById(applicantId)
+                .map(applicantMapper::toResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("No applicant found with id : " + applicantId));
     }
 

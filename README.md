@@ -25,6 +25,8 @@ User
   │
   ├── @OneToOne ──► Applicant
   │                   ├── id, name, experience, jobTitle, isActive
+  │                   ├── @OneToMany ──► Review
+  │                   │                   └── id, title, description, rating
   │                   └── @ManyToMany ──► Job
   │                                        ├── id, title, description, minSalary, maxSalary, location
   │                                        └── @ManyToOne ──► Company
@@ -158,17 +160,20 @@ http://localhost:8080/api
 ```
 src/main/java/com/ashutosh/jobApp/
 ├── controller/        # REST controllers
+├── dto/
+│   ├── request/       # Request DTOs
+│   └── response/      # Response DTOs
 ├── entity/            # JPA entities
+├── enums/             # Role enums
+├── exception/         # Custom exceptions + GlobalExceptionHandler
+├── mapper/            # Manual mappers - Applicant, Company, Job, Review
 ├── repository/        # Spring Data JPA repositories
-├── service/           # Service interfaces
-│   └── impl/          # Service implementations
-├── dto/               # dtos
-├── enums/             # enums - roles
-├── security/          # Security package
-    └── filter/        # Security filters
-    └── util/          # Security utils
-    └── Security config 
-└── exception/         # Custom exceptions
+├── security/
+│   ├── filter/        # JwtAuthenticationFilter
+│   ├── util/          # JwtUtil, SecurityUtils
+│   └── SecurityConfig
+└── service/
+    └── impl/          # Service implementations
 ```
  
 ---
@@ -176,8 +181,6 @@ src/main/java/com/ashutosh/jobApp/
 ## TODO
 
 - [ ] Refactor job search/filter to Specification pattern
-- [ ] Add Request/Response DTOs
-- [ ] Refactor GlobalExceptionHandler
 - [ ] Add Bean Validation on request bodies
 - [ ] Add Swagger/OpenAPI documentation
 - [ ] Write unit and integration tests

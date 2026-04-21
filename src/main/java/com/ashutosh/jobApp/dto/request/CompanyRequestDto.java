@@ -1,11 +1,11 @@
-package com.ashutosh.jobApp.dto;
+package com.ashutosh.jobApp.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CompanyProfileRequest {
+public class CompanyRequestDto {
 
     private String name;
     private String description;

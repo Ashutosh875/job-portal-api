@@ -1,6 +1,7 @@
 package com.ashutosh.jobApp.service;
 
-import com.ashutosh.jobApp.dto.ApplicantProfileRequest;
+import com.ashutosh.jobApp.dto.request.ApplicantRequestDto;
+import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 
 
@@ -9,9 +10,9 @@ public interface ApplicantService {
 
     Applicant getAuthenticatedApplicant();
 
-    Applicant getApplicantById(Long applicantId);
+    ApplicantResponseDto getApplicantById(Long applicantId);
 
     void deleteApplicant();
 
-    Applicant updateApplicantProfile(ApplicantProfileRequest applicantProfileRequest);
+    ApplicantResponseDto updateApplicantProfile(ApplicantRequestDto applicantRequestDto);
 }

@@ -1,9 +1,12 @@
 package com.ashutosh.jobApp.service.impl;
 
+import com.ashutosh.jobApp.dto.request.ReviewRequestDto;
+import com.ashutosh.jobApp.dto.response.ReviewResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Company;
+import com.ashutosh.jobApp.mapper.ReviewMapper;
+import com.ashutosh.jobApp.repository.CompanyRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
-import com.ashutosh.jobApp.service.CompanyService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.repository.ReviewRepository;
@@ -22,53 +25,67 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final CompanyService companyService;
     private final ApplicantService applicantService;
+    private final CompanyRepository companyRepository;
+    private final ReviewMapper reviewMapper;
 
-    @Transactional(readOnly = true)
-    @Override
-    public Page<Review> getAllReviews(Long companyId , Pageable pageable) {
-
-        return reviewRepository.findByCompanyId(companyId , pageable);
+    // Helper method to find company by id
+    private Company getCompanyById(Long companyId){
+        return companyRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("company with id : " + companyId + " Not found"));
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    @Override
-    public Review postReview(Long companyId, Review review) {
-
-        Applicant applicant = applicantService.getAuthenticatedApplicant();
-        review.setApplicant(applicant);
-        Company company = companyService.getCompanyById(companyId);
-        company.addReview(review);
-
-        return reviewRepository.save(review);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Review getReviewById(Long reviewId) {
-
+    //helper method to find review by id
+    private Review findReviewById(Long reviewId){
         return reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("No review Found"));
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Page<ReviewResponseDto> getAllReviews(Long companyId , Pageable pageable) {
+
+        return reviewRepository
+                .findByCompanyId(companyId , pageable)
+                .map(reviewMapper::toResponseDto);
+    }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
-    public Review updateReviewById(Long reviewId, Review updatedReview) {
+    public ReviewResponseDto postReview(Long companyId, ReviewRequestDto requestDto) {
+
+        Applicant applicant = applicantService.getAuthenticatedApplicant();
+        Review review = reviewMapper.toEntity(requestDto);
+        review.setApplicant(applicant);
+        Company company = getCompanyById(companyId);
+        company.addReview(review);
+
+        return reviewMapper.toResponseDto(reviewRepository.save(review));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReviewResponseDto getReviewById(Long reviewId) {
+        return reviewMapper.toResponseDto(findReviewById(reviewId));
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Override
+    public ReviewResponseDto updateReviewById(Long reviewId, ReviewRequestDto requestDto) {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
 
-        Review review = getReviewById(reviewId);
+        Review review = findReviewById(reviewId);
 
         if(!applicant.getId().equals(review.getApplicant().getId())){
             throw new AccessDeniedException("No Access To Update this Review");
         }
 
-        review.setDescription(updatedReview.getDescription());
-        review.setRating(updatedReview.getRating());
-        review.setTitle(updatedReview.getTitle());
+        review.setDescription(requestDto.getDescription());
+        review.setRating(requestDto.getRating());
+        review.setTitle(requestDto.getTitle());
 
-        return reviewRepository.save(review);
+        return reviewMapper.toResponseDto(reviewRepository.save(review));
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -77,10 +94,10 @@ public class ReviewServiceImpl implements ReviewService {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
 
-        Review review = getReviewById(reviewId);
+        Review review = findReviewById(reviewId);
 
         if(!applicant.getId().equals(review.getApplicant().getId())){
-            throw new AccessDeniedException("No Access To Update this Review");
+            throw new AccessDeniedException("No Access To Delete this Review");
         }
 
         reviewRepository.delete(review);

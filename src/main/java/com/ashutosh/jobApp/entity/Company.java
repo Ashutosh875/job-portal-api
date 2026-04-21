@@ -1,6 +1,5 @@
 package com.ashutosh.jobApp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -8,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -36,8 +36,7 @@ public class Company extends BaseEntity{
     @OneToMany(mappedBy = "company",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    @JsonIgnore
-    private List<Job> jobs;
+    private List<Job> jobs = new ArrayList<>();
 
     public void addJob(Job job){
         jobs.add(job);
@@ -48,8 +47,7 @@ public class Company extends BaseEntity{
     @OneToMany(mappedBy = "company" ,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    @JsonIgnore
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 
     public void addReview(Review review){
         reviews.add(review);

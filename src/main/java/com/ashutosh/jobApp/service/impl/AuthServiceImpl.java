@@ -1,8 +1,10 @@
 package com.ashutosh.jobApp.service.impl;
 
-import com.ashutosh.jobApp.dto.AuthResponse;
-import com.ashutosh.jobApp.dto.LoginRequest;
-import com.ashutosh.jobApp.dto.RegisterRequest;
+import com.ashutosh.jobApp.dto.request.RegisterApplicantDto;
+import com.ashutosh.jobApp.dto.request.RegisterCompanyDto;
+import com.ashutosh.jobApp.dto.response.AuthResponseDto;
+import com.ashutosh.jobApp.dto.request.LoginRequest;
+import com.ashutosh.jobApp.dto.request.RegisterRequest;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.entity.User;
@@ -36,51 +38,56 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public AuthResponse registerApplicant(RegisterRequest registerRequest) {
+    public AuthResponseDto registerApplicant(RegisterApplicantDto registerRequest) {
+
+        if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
+            throw new EmailAlreadyExistsException("Email Already Registered");
+        }
 
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPassword(encoder.encode(registerRequest.getPassword()));
         user.setRole(Role.ROLE_APPLICANT);
 
-        if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
-            throw new EmailAlreadyExistsException("Email Already Registered");
-        }
-
         userRepository.save(user);
 
         Applicant applicant = new Applicant();
+        applicant.setName(registerRequest.getName());
+        applicant.setExperience(registerRequest.getExperience());
+        applicant.setJobTitle(registerRequest.getJobTitle());
         applicant.setUser(user);
         applicantRepository.save(applicant);
 
-        return new AuthResponse(jwtUtil.generateToken(user));
+        return new AuthResponseDto(jwtUtil.generateToken(user));
     }
 
     @Override
     @Transactional
-    public AuthResponse registerCompany(RegisterRequest registerRequest) {
+    public AuthResponseDto registerCompany(RegisterCompanyDto registerRequest) {
+
+        if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
+            throw new EmailAlreadyExistsException("Email Already Registered");
+        }
 
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPassword(encoder.encode(registerRequest.getPassword()));
         user.setRole(Role.ROLE_COMPANY);
 
-        if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
-            throw new EmailAlreadyExistsException("Email Already Registered");
-        }
-
         userRepository.save(user);
 
         Company company = new Company();
+        company.setName(registerRequest.getName());
+        company.setDescription(registerRequest.getDescription());
         company.setUser(user);
         companyRepository.save(company);
 
-        return new AuthResponse(jwtUtil.generateToken(user));
+        return new AuthResponseDto(jwtUtil.generateToken(user));
     }
 
     @Override
     @Transactional
-    public AuthResponse login(LoginRequest loginRequest) {
+    public AuthResponseDto login(LoginRequest loginRequest) {
 
         manager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail() , loginRequest.getPassword())
@@ -88,6 +95,6 @@ public class AuthServiceImpl implements AuthService {
 
         UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
-        return new AuthResponse(jwtUtil.generateToken(user));
+        return new AuthResponseDto(jwtUtil.generateToken(user));
     }
 }

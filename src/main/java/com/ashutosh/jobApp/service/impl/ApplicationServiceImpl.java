@@ -1,15 +1,18 @@
 package com.ashutosh.jobApp.service.impl;
 
+import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
+import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
+import com.ashutosh.jobApp.mapper.ApplicantMapper;
+import com.ashutosh.jobApp.mapper.JobMapper;
 import com.ashutosh.jobApp.repository.ApplicantRepository;
 import com.ashutosh.jobApp.repository.JobRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
 import com.ashutosh.jobApp.service.ApplicationService;
 import com.ashutosh.jobApp.service.CompanyService;
-import com.ashutosh.jobApp.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +27,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicantService applicantService;
-    private final JobService jobService;
     private final JobRepository jobRepository;
     private final ApplicantRepository applicantRepository;
     private final CompanyService companyService;
+    private final JobMapper jobMapper;
+    private final ApplicantMapper applicantMapper;
+
+    //helper method to get job entity by id
+    private Job getJobById(Long jobId){
+        return jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job with id : " + jobId + " Not found"));
+    }
 
 
     @Transactional(
@@ -35,14 +45,14 @@ public class ApplicationServiceImpl implements ApplicationService {
             isolation = Isolation.REPEATABLE_READ
     )
     @Override
-    public Job applyToJob(Long jobId) {
+    public JobResponseDto applyToJob(Long jobId) {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
-        Job job = jobService.findJobById(jobId);
+        Job job = getJobById(jobId);
 
         job.addApplicant(applicant);
 
-        return jobRepository.save(job);
+        return jobMapper.toResponse(jobRepository.save(job));
     }
 
     @Transactional(
@@ -53,7 +63,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public void withdrawApplication(Long jobId) {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
-        Job job = jobService.findJobById(jobId);
+        Job job = getJobById(jobId);
 
         if(!job.getApplicants().contains(applicant)){
             throw new ResourceNotFoundException("No Application Found");
@@ -65,24 +75,28 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Page<Job> getApplicationsOfApplicant(Pageable pageable) {
+    public Page<JobResponseDto> getApplicationsOfApplicant(Pageable pageable) {
         Applicant applicant = applicantService.getAuthenticatedApplicant();
 
-        return jobRepository.findJobsByApplicantId(applicant.getId() , pageable);
+        return jobRepository
+                .findJobsByApplicantId(applicant.getId() , pageable)
+                .map(jobMapper::toResponse);
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Page<Applicant> getApplicantForJob(Long jobId, Pageable pageable) {
+    public Page<ApplicantResponseDto> getApplicantForJob(Long jobId, Pageable pageable) {
 
         Company company = companyService.getAuthenticatedCompany();
-        Job job = jobService.findJobById(jobId);
+        Job job = getJobById(jobId);
 
         if(!company.getId().equals(job.getCompany().getId())){
             throw new AccessDeniedException("Access Denied");
         }
 
-        return applicantRepository.findApplicantsByJobId(jobId , pageable);
+        return applicantRepository
+                .findApplicantsByJobId(jobId , pageable)
+                .map(applicantMapper::toResponseDto);
     }
 
 

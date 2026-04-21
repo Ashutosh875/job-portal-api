@@ -1,8 +1,10 @@
 package com.ashutosh.jobApp.controller;
 
-import com.ashutosh.jobApp.dto.AuthResponse;
-import com.ashutosh.jobApp.dto.LoginRequest;
-import com.ashutosh.jobApp.dto.RegisterRequest;
+import com.ashutosh.jobApp.dto.request.RegisterApplicantDto;
+import com.ashutosh.jobApp.dto.request.RegisterCompanyDto;
+import com.ashutosh.jobApp.dto.response.AuthResponseDto;
+import com.ashutosh.jobApp.dto.request.LoginRequest;
+import com.ashutosh.jobApp.dto.request.RegisterRequest;
 import com.ashutosh.jobApp.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register/applicant")
-    public ResponseEntity<AuthResponse> registerApplicant(@RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<AuthResponseDto> registerApplicant(@RequestBody RegisterApplicantDto registerRequest){
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -28,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/company")
-    public ResponseEntity<AuthResponse> registerCompany(@RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<AuthResponseDto> registerCompany(@RequestBody RegisterCompanyDto registerRequest){
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -36,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginRequest loginRequest){
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
-    @Query("SELECT c FROM Company c LEFT JOIN FETCH c.reviews")
-    Page<Company> findAllWithReviews(Pageable pageable);
+//    @Query("SELECT c FROM Company c LEFT JOIN FETCH c.reviews")
+//    Page<Company> findAllWithReviews(Pageable pageable);
 
     Optional<Company> findByUserId(Long id);
 

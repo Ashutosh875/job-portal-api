@@ -1,8 +1,10 @@
 package com.ashutosh.jobApp.service.impl;
 
-import com.ashutosh.jobApp.dto.CompanyProfileRequest;
+import com.ashutosh.jobApp.dto.request.CompanyRequestDto;
+import com.ashutosh.jobApp.dto.response.CompanyResponseDto;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.entity.User;
+import com.ashutosh.jobApp.mapper.CompanyMapper;
 import com.ashutosh.jobApp.repository.CompanyRepository;
 import com.ashutosh.jobApp.repository.UserRepository;
 import com.ashutosh.jobApp.service.CompanyService;
@@ -22,6 +24,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final CompanyMapper companyMapper;
 
     @Override
     @Transactional
@@ -35,26 +38,30 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Company> getAllCompanies(Pageable pageable) {
-        return companyRepository.findAllWithReviews(pageable);
+    public Page<CompanyResponseDto> getAllCompanies(Pageable pageable) {
+        return companyRepository
+                .findAll(pageable)
+                .map(companyMapper::toResponseDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Company getCompanyById(Long id) {
+    public CompanyResponseDto getCompanyById(Long id) {
         return companyRepository.findById(id)
+                .map(companyMapper::toResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("company with id : " + id + " Not found"));
     }
 
     @Override
     @Transactional
-    public Company updateCompanyProfile(CompanyProfileRequest request) {
+    public CompanyResponseDto updateCompanyProfile(CompanyRequestDto request) {
         Company company = getAuthenticatedCompany();
 
         company.setName(request.getName());
         company.setDescription(request.getDescription());
 
-        return companyRepository.save(company);
+        return companyMapper
+                .toResponseDto(companyRepository.save(company));
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)

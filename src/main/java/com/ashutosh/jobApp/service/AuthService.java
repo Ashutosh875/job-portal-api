@@ -1,14 +1,16 @@
 package com.ashutosh.jobApp.service;
 
-import com.ashutosh.jobApp.dto.AuthResponse;
-import com.ashutosh.jobApp.dto.LoginRequest;
-import com.ashutosh.jobApp.dto.RegisterRequest;
+import com.ashutosh.jobApp.dto.request.RegisterApplicantDto;
+import com.ashutosh.jobApp.dto.request.RegisterCompanyDto;
+import com.ashutosh.jobApp.dto.response.AuthResponseDto;
+import com.ashutosh.jobApp.dto.request.LoginRequest;
+import com.ashutosh.jobApp.dto.request.RegisterRequest;
 
 public interface AuthService {
 
-    AuthResponse registerApplicant(RegisterRequest registerRequest);
+    AuthResponseDto registerApplicant(RegisterApplicantDto registerRequest);
 
-    AuthResponse registerCompany(RegisterRequest registerRequest);
+    AuthResponseDto registerCompany(RegisterCompanyDto registerRequest);
 
-    AuthResponse login(LoginRequest loginRequest);
+    AuthResponseDto login(LoginRequest loginRequest);
 }

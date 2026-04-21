@@ -1,6 +1,5 @@
 package com.ashutosh.jobApp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -38,7 +37,6 @@ public class Job extends BaseEntity {
             joinColumns = @JoinColumn(name = "job_id"),
             inverseJoinColumns = @JoinColumn(name = "applicant_id")
     )
-    @JsonIgnore
     private List<Applicant> applicants = new ArrayList<>();
 
     public void addApplicant(Applicant applicant){

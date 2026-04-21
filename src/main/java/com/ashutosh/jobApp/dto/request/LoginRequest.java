@@ -1,11 +1,9 @@
-package com.ashutosh.jobApp.dto;
+package com.ashutosh.jobApp.dto.request;
 
 import lombok.Getter;
 
 @Getter
-public class RegisterRequest {
-
+public class LoginRequest {
     private String email;
     private String password;
-
 }

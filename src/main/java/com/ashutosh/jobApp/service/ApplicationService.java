@@ -1,6 +1,8 @@
 package com.ashutosh.jobApp.service;
 
 
+import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
+import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Job;
 import org.springframework.data.domain.Page;
@@ -8,12 +10,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface ApplicationService {
 
-    Job applyToJob(Long jobId);
+    JobResponseDto applyToJob(Long jobId);
 
     void withdrawApplication(Long jobId);
 
 
-    Page<Job> getApplicationsOfApplicant(Pageable pageable);
+    Page<JobResponseDto> getApplicationsOfApplicant(Pageable pageable);
 
-    Page<Applicant> getApplicantForJob(Long jobId, Pageable pageable);
+    Page<ApplicantResponseDto> getApplicantForJob(Long jobId, Pageable pageable);
 }

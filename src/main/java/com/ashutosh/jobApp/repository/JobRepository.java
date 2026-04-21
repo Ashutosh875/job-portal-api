@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
 
-    List<Job> findAllByCompanyId(Long companyId);
+    Page<Job> findAllByCompanyId(Long companyId , Pageable pageable);
 
     @Query("SELECT j FROM Job j WHERE j.location = :location")
     Page<Job> findJobsByLocation(@Param("location") String location , Pageable pageable);

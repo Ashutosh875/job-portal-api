@@ -1,6 +1,7 @@
 package com.ashutosh.jobApp.controller;
 
-import com.ashutosh.jobApp.dto.ApplicantProfileRequest;
+import com.ashutosh.jobApp.dto.request.ApplicantRequestDto;
+import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.service.ApplicantService;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,17 @@ public class ApplicantController {
 
     @PutMapping("/profile")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<Applicant> updateProfile(@RequestBody ApplicantProfileRequest applicantProfileRequest){
+    public ResponseEntity<ApplicantResponseDto> updateProfile(@RequestBody ApplicantRequestDto applicantRequestDto){
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(applicantService.updateApplicantProfile(applicantProfileRequest));
+                .body(applicantService.updateApplicantProfile(applicantRequestDto));
     }
 
 
     @GetMapping("/{applicantId}")
     @PreAuthorize("hasRole('COMPANY')")
-    public ResponseEntity<Applicant> getApplicantById(@PathVariable Long applicantId){
+    public ResponseEntity<ApplicantResponseDto> getApplicantById(@PathVariable Long applicantId){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(applicantService.getApplicantById(applicantId));

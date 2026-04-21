@@ -1,6 +1,8 @@
 package com.ashutosh.jobApp.controller;
 
 
+import com.ashutosh.jobApp.dto.request.JobRequestDto;
+import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +27,14 @@ public class JobController {
 
     @PostMapping("/companies/jobs")
     @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
-    public ResponseEntity<Job> createJob(@RequestBody Job job){
+    public ResponseEntity<JobResponseDto> postJob(@RequestBody JobRequestDto jobRequestDto){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(jobService.postJob(job));
+                .body(jobService.postJob(jobRequestDto));
     }
 
     @GetMapping("/jobs")
-    public ResponseEntity<Page<Job>> findAllJobs(
+    public ResponseEntity<Page<JobResponseDto>> findAllJobs(
             @RequestParam(required = false) String location,
             @RequestParam(required = false) Long minSalary,
             @RequestParam(required = false) String title,
@@ -71,7 +73,7 @@ public class JobController {
     }
 
     @GetMapping("/jobs/{jobId}")
-    public ResponseEntity<Job> findJobById(@PathVariable Long jobId){
+    public ResponseEntity<JobResponseDto> findJobById(@PathVariable Long jobId){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.findJobById(jobId));
@@ -79,19 +81,31 @@ public class JobController {
 
 
     @GetMapping("/companies/{companyId}/jobs")
-    public ResponseEntity<List<Job>> findAllJobsByCompany(@PathVariable Long companyId){
+    public ResponseEntity<Page<JobResponseDto>> findAllJobsByCompany(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @PathVariable Long companyId){
+
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                :Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page , size , sort);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobService.findAllJobsByCompany(companyId));
+                .body(jobService.findAllJobsByCompany(companyId , pageable));
     }
 
     @PutMapping("/jobs/{jobId}")
     @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
-    public ResponseEntity<Job> updateJob(@RequestBody Job job,
+    public ResponseEntity<JobResponseDto> updateJob(@RequestBody JobRequestDto jobRequestDto,
                                          @PathVariable Long jobId){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobService.updateJobById(job,jobId));
+                .body(jobService.updateJobById(jobRequestDto,jobId));
     }
 
     @DeleteMapping("/jobs/{jobId}")

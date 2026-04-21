@@ -1,5 +1,7 @@
 package com.ashutosh.jobApp.controller;
 
+import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
+import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.service.ApplicationService;
@@ -24,7 +26,7 @@ public class ApplicationController {
 
     @PostMapping("/jobs/{jobId}/apply")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<Job> applyToJob(@PathVariable Long jobId){
+    public ResponseEntity<JobResponseDto> applyToJob(@PathVariable Long jobId){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(applicationService.applyToJob(jobId));
@@ -43,7 +45,7 @@ public class ApplicationController {
 
     @GetMapping("/applicants/my-applications")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<Page<Job>> getApplicationsOfApplicant(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<JobResponseDto>> getApplicationsOfApplicant(@RequestParam(defaultValue = "0") int page,
                                                          @RequestParam(defaultValue = "5") int size,
                                                          @RequestParam(defaultValue = "id") String sortBy,
                                                          @RequestParam(defaultValue = "asc") String sortDir){
@@ -62,11 +64,11 @@ public class ApplicationController {
 
     @GetMapping("/jobs/{jobId}/applicants")
     @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
-    public ResponseEntity<Page<Applicant>> getApplicantForJob(@PathVariable Long jobId,
-                                                              @RequestParam(defaultValue = "0") int page,
-                                                              @RequestParam(defaultValue = "5") int size,
-                                                              @RequestParam(defaultValue = "id") String sortBy,
-                                                              @RequestParam(defaultValue = "asc") String sortDir){
+    public ResponseEntity<Page<ApplicantResponseDto>> getApplicantForJob(@PathVariable Long jobId,
+                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "5") int size,
+                                                                         @RequestParam(defaultValue = "id") String sortBy,
+                                                                         @RequestParam(defaultValue = "asc") String sortDir){
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();

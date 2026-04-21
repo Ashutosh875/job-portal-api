@@ -1,5 +1,7 @@
 package com.ashutosh.jobApp.controller;
 
+import com.ashutosh.jobApp.dto.request.ReviewRequestDto;
+import com.ashutosh.jobApp.dto.response.ReviewResponseDto;
 import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,11 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping("/companies/{companyId}/reviews")
-    public ResponseEntity<Page<Review>> getAllReviews(@PathVariable Long companyId,
-                                                      @RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size,
-                                                      @RequestParam(defaultValue = "id") String sortBy,
-                                                      @RequestParam(defaultValue = "asc") String sortDir){
+    public ResponseEntity<Page<ReviewResponseDto>> getAllReviews(@PathVariable Long companyId,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "id") String sortBy,
+                                                                 @RequestParam(defaultValue = "asc") String sortDir){
 
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ?Sort.by(sortBy).descending()
@@ -41,15 +43,15 @@ public class ReviewController {
 
     @PostMapping("/companies/{companyId}/reviews")
     @PreAuthorize("hasRole('APPLICANT')")
-    public  ResponseEntity<Review> postReview(@PathVariable Long companyId ,
-                                             @RequestBody Review review){
+    public  ResponseEntity<ReviewResponseDto> postReview(@PathVariable Long companyId ,
+                                             @RequestBody ReviewRequestDto requestDto){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(reviewService.postReview(companyId , review));
+                .body(reviewService.postReview(companyId , requestDto));
     }
 
     @GetMapping("/reviews/{reviewId}")
-    public ResponseEntity<Review> getReviewById(@PathVariable Long reviewId){
+    public ResponseEntity<ReviewResponseDto> getReviewById(@PathVariable Long reviewId){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(reviewService.getReviewById(reviewId));
@@ -57,11 +59,11 @@ public class ReviewController {
 
     @PutMapping("/reviews/{reviewId}")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<Review> updateReviewById(@PathVariable Long reviewId,
-                                                   @RequestBody Review review){
+    public ResponseEntity<ReviewResponseDto> updateReviewById(@PathVariable Long reviewId,
+                                                   @RequestBody ReviewRequestDto requestDto){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(reviewService.updateReviewById(reviewId , review));
+                .body(reviewService.updateReviewById(reviewId , requestDto));
     }
 
     @DeleteMapping("/reviews/{reviewId}")

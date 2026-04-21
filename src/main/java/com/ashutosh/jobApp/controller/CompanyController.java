@@ -1,6 +1,7 @@
 package com.ashutosh.jobApp.controller;
 
-import com.ashutosh.jobApp.dto.CompanyProfileRequest;
+import com.ashutosh.jobApp.dto.request.CompanyRequestDto;
+import com.ashutosh.jobApp.dto.response.CompanyResponseDto;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.service.CompanyService;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +24,15 @@ public class CompanyController {
 
     @PutMapping("/profile")
     @PreAuthorize("hasRole('COMPANY')")
-    public ResponseEntity<Company> updateProfile(@RequestBody
-                                                     CompanyProfileRequest request){
+    public ResponseEntity<CompanyResponseDto> updateProfile(@RequestBody
+                                                 CompanyRequestDto request){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(companyService.updateCompanyProfile(request));
     }
 
     @GetMapping
-    public ResponseEntity<Page<Company>> getAllCompanies(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<CompanyResponseDto>> getAllCompanies(@RequestParam(defaultValue = "0") int page,
                                                          @RequestParam(defaultValue = "5") int size,
                                                          @RequestParam(defaultValue = "id") String sortBy,
                                                          @RequestParam(defaultValue = "asc") String sortDir){
@@ -48,7 +49,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Company> getCompanyById(@PathVariable Long id){
+    public ResponseEntity<CompanyResponseDto> getCompanyById(@PathVariable Long id){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(companyService.getCompanyById(id));

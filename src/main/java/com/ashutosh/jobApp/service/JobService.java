@@ -1,5 +1,7 @@
 package com.ashutosh.jobApp.service;
 
+import com.ashutosh.jobApp.dto.request.JobRequestDto;
+import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Job;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,19 +10,19 @@ import java.util.List;
 
 public interface JobService {
 
-    Job postJob(Job job);
+    JobResponseDto postJob(JobRequestDto jobRequestDto);
 
-    Page<Job> findAllJobs(Pageable pageable);
+    Page<JobResponseDto> findAllJobs(Pageable pageable);
 
-    Job findJobById(Long jobId);
+    JobResponseDto findJobById(Long jobId);
 
-    List<Job> findAllJobsByCompany(Long companyId);
+    Page<JobResponseDto> findAllJobsByCompany(Long companyId , Pageable pageable);
 
-    Job updateJobById(Job job , Long jobId);
+    JobResponseDto updateJobById(JobRequestDto jobRequestDto , Long jobId);
 
     void deleteJobById(Long jobId);
 
-    Page<Job> findJobByLocation(String location, Pageable pageable);
-    Page<Job> findJobByMinSalary(Long minSalary, Pageable pageable);
-    Page<Job> findJobByTitle(String title, Pageable pageable);
+    Page<JobResponseDto> findJobByLocation(String location, Pageable pageable);
+    Page<JobResponseDto> findJobByMinSalary(Long minSalary, Pageable pageable);
+    Page<JobResponseDto> findJobByTitle(String title, Pageable pageable);
 }
