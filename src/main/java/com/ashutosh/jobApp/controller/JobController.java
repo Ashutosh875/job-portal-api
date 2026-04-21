@@ -3,7 +3,6 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.dto.request.JobRequestDto;
 import com.ashutosh.jobApp.dto.response.JobResponseDto;
-import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -34,9 +31,10 @@ public class JobController {
     }
 
     @GetMapping("/jobs")
-    public ResponseEntity<Page<JobResponseDto>> findAllJobs(
+    public ResponseEntity<Page<JobResponseDto>> searchJobs(
             @RequestParam(required = false) String location,
             @RequestParam(required = false) Long minSalary,
+            @RequestParam(required = false) Long maxSalary,
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -49,27 +47,9 @@ public class JobController {
 
         Pageable pageable = PageRequest.of(page , size , sort);
 
-        if(location != null && minSalary == null && title == null){
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(jobService.findJobByLocation(location,pageable));
-        }
-
-        if(location == null && minSalary != null && title == null){
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(jobService.findJobByMinSalary(minSalary,pageable));
-        }
-
-        if(location == null && minSalary == null && title != null){
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(jobService.findJobByTitle(title,pageable));
-        }
-
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobService.findAllJobs(pageable));
+                .body(jobService.searchJobs(location , minSalary ,maxSalary, title ,pageable));
     }
 
     @GetMapping("/jobs/{jobId}")

@@ -1,6 +1,10 @@
 # Job Portal REST API
 
-A production-style backend system built with Java and Spring Boot, based on platforms like Glassdoor and Naukri. Features full CRUD operations, JPA relationship management, search and filter APIs, pagination, sorting, transaction management, and soft delete.
+A production-style REST API built with Java 21 and Spring Boot, inspired by platforms
+like Glassdoor and Naukri. Features JWT-based authentication, role-based access control,
+ownership-based authorization, dynamic job search with JPA Specification, pagination,
+sorting, soft delete, global exception handling, and full CRUD across jobs, companies,
+applicants, and reviews.
 
 ## Tech Stack
 
@@ -73,7 +77,7 @@ User
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/companies/jobs` | Create job | 
-| GET | `/api/jobs` | Get all jobs |
+| GET | `/api/jobs` | Search jobs (filter by location, title, minSalary, maxSalary) |
 | GET | `/api/jobs/{jobId}` | Get job by ID |
 | GET | `/api/companies/{companyId}/jobs` | Get all jobs by company |
 | PUT | `/api/jobs/{jobId}` | Update job |
@@ -98,19 +102,6 @@ User
 | PUT | `/api/reviews/{reviewId}` | Update review |
 | DELETE | `/api/reviews/{reviewId}` | Delete review | 
 
-## Search, Filter & Pagination
-
-The `GET /api/jobs` endpoint supports dynamic filtering, pagination and sorting:
-
-```
-``
-GET /api/jobs?page=0&size=10&sortBy=minSalary&sortDir=desc
-GET /api/jobs?location=Delhi
-GET /api/jobs?minSalary=50000
-GET /api/jobs?title=backend
-GET /api/jobs?location=Delhi&page=0&size=5
-``
-```
 ## Setup & Run Locally
 
 ### Prerequisites
@@ -174,13 +165,14 @@ src/main/java/com/ashutosh/jobApp/
 │   └── SecurityConfig
 └── service/
     └── impl/          # Service implementations
+└── specification/
+    └── JobSpecification
 ```
  
 ---
 
 ## TODO
 
-- [ ] Refactor job search/filter to Specification pattern
 - [ ] Add Bean Validation on request bodies
 - [ ] Add Swagger/OpenAPI documentation
 - [ ] Write unit and integration tests
@@ -189,5 +181,4 @@ src/main/java/com/ashutosh/jobApp/
 
 **Ashutosh** — [github.com/Ashutosh875](https://github.com/Ashutosh875)
 
-> Built as part of a structured Spring Boot backend development learning .
  

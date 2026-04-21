@@ -80,7 +80,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericExceptions(Exception e ,
                                                                  HttpServletRequest request){
-        
+        e.printStackTrace();
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Something Went Wrong",

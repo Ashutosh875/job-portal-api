@@ -4,27 +4,20 @@ import com.ashutosh.jobApp.dto.request.JobRequestDto;
 import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.entity.Job;
-import com.ashutosh.jobApp.entity.User;
 import com.ashutosh.jobApp.mapper.JobMapper;
-import com.ashutosh.jobApp.repository.CompanyRepository;
 import com.ashutosh.jobApp.repository.JobRepository;
-import com.ashutosh.jobApp.repository.UserRepository;
 import com.ashutosh.jobApp.service.CompanyService;
 import com.ashutosh.jobApp.service.JobService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
+import com.ashutosh.jobApp.specification.JobSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +49,22 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<JobResponseDto> findAllJobs(Pageable pageable) {
+    @Transactional
+    public Page<JobResponseDto> searchJobs(String location,
+                                           Long minSalary,
+                                           Long maxSalary,
+                                           String title,
+                                           Pageable pageable){
+
+        Specification<Job> spec = (root, query, cb) -> cb.conjunction();
+
+        if( location != null) spec = spec.and(JobSpecification.hasLocation(location));
+        if( minSalary != null) spec = spec.and(JobSpecification.hasMinSalary(minSalary));
+        if( maxSalary != null) spec = spec.and(JobSpecification.hasMaxSalary(maxSalary));
+        if( title != null) spec = spec.and(JobSpecification.hasTitle(title));
+
         return jobRepository
-                .findAll(pageable)
+                .findAll(spec , pageable)
                 .map(jobMapper::toResponse);
     }
 
@@ -119,30 +124,5 @@ public class JobServiceImpl implements JobService {
 
         jobRepository.delete(job);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<JobResponseDto> findJobByLocation(String location , Pageable pageable) {
-        return jobRepository
-                .findJobsByLocation(location,pageable)
-                .map(jobMapper::toResponse);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<JobResponseDto> findJobByMinSalary(Long minSalary , Pageable pageable) {
-        return jobRepository
-                .findJobsByMinSalary(minSalary,pageable)
-                .map(jobMapper::toResponse);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<JobResponseDto> findJobByTitle(String title,Pageable pageable) {
-        return jobRepository
-                .findJobsByTitle(title,pageable)
-                .map(jobMapper::toResponse);
-    }
-
 
 }
