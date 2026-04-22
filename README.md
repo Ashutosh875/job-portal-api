@@ -150,6 +150,7 @@ http://localhost:8080/api
 
 ```
 src/main/java/com/ashutosh/jobApp/
+├── config/            # SwaggerConfig, SecurityConfig
 ├── controller/        # REST controllers
 ├── dto/
 │   ├── request/       # Request DTOs
@@ -161,20 +162,16 @@ src/main/java/com/ashutosh/jobApp/
 ├── repository/        # Spring Data JPA repositories
 ├── security/
 │   ├── filter/        # JwtAuthenticationFilter
-│   ├── util/          # JwtUtil, SecurityUtils
-│   └── SecurityConfig
-└── service/
-    └── impl/          # Service implementations
-└── specification/
-    └── JobSpecification
+│   └── util/          # JwtUtil, SecurityUtils
+├── service/
+│   └── impl/          # Service implementations
+└── specification/     # JobSpecification
 ```
  
 ---
 
 ## TODO
 
-- [ ] Add Bean Validation on request bodies
-- [ ] Add Swagger/OpenAPI documentation
 - [ ] Write unit and integration tests
 
 ## Author

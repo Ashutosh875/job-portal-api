@@ -1,4 +1,4 @@
-package com.ashutosh.jobApp.security;
+package com.ashutosh.jobApp.config;
 
 import com.ashutosh.jobApp.security.filter.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,7 +44,7 @@ public class SecurityConfig{
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
