@@ -2,8 +2,8 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.dto.request.ApplicantRequestDto;
 import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
-import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.service.ApplicantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class ApplicantController {
 
     @PutMapping("/profile")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<ApplicantResponseDto> updateProfile(@RequestBody ApplicantRequestDto applicantRequestDto){
+    public ResponseEntity<ApplicantResponseDto> updateProfile(@Valid @RequestBody ApplicantRequestDto applicantRequestDto){
 
         return ResponseEntity
                 .status(HttpStatus.OK)

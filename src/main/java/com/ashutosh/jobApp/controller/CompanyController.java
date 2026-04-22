@@ -2,8 +2,8 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.dto.request.CompanyRequestDto;
 import com.ashutosh.jobApp.dto.response.CompanyResponseDto;
-import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.service.CompanyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +24,7 @@ public class CompanyController {
 
     @PutMapping("/profile")
     @PreAuthorize("hasRole('COMPANY')")
-    public ResponseEntity<CompanyResponseDto> updateProfile(@RequestBody
+    public ResponseEntity<CompanyResponseDto> updateProfile(@Valid @RequestBody
                                                  CompanyRequestDto request){
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -57,7 +57,7 @@ public class CompanyController {
 
     @DeleteMapping("/profile")
     @PreAuthorize("hasRole('COMPANY')")
-    public ResponseEntity<String> deleteCompany(){
+    public ResponseEntity<Void> deleteCompany(){
         companyService.deleteCompany();
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)

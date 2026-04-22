@@ -4,6 +4,7 @@ package com.ashutosh.jobApp.controller;
 import com.ashutosh.jobApp.dto.request.JobRequestDto;
 import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.service.JobService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,7 @@ public class JobController {
 
     @PostMapping("/companies/jobs")
     @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
-    public ResponseEntity<JobResponseDto> postJob(@RequestBody JobRequestDto jobRequestDto){
+    public ResponseEntity<JobResponseDto> postJob(@Valid @RequestBody JobRequestDto jobRequestDto){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(jobService.postJob(jobRequestDto));
@@ -81,7 +82,7 @@ public class JobController {
 
     @PutMapping("/jobs/{jobId}")
     @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
-    public ResponseEntity<JobResponseDto> updateJob(@RequestBody JobRequestDto jobRequestDto,
+    public ResponseEntity<JobResponseDto> updateJob(@Valid @RequestBody JobRequestDto jobRequestDto,
                                          @PathVariable Long jobId){
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -90,7 +91,7 @@ public class JobController {
 
     @DeleteMapping("/jobs/{jobId}")
     @PreAuthorize("hasAnyRole('COMPANY' , 'ADMIN')")
-    public ResponseEntity<String> deleteJob(@PathVariable Long jobId){
+    public ResponseEntity<Void> deleteJob(@PathVariable Long jobId){
         jobService.deleteJobById(jobId);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)

@@ -2,8 +2,8 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.dto.request.ReviewRequestDto;
 import com.ashutosh.jobApp.dto.response.ReviewResponseDto;
-import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.service.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,7 +44,7 @@ public class ReviewController {
     @PostMapping("/companies/{companyId}/reviews")
     @PreAuthorize("hasRole('APPLICANT')")
     public  ResponseEntity<ReviewResponseDto> postReview(@PathVariable Long companyId ,
-                                             @RequestBody ReviewRequestDto requestDto){
+                                             @Valid @RequestBody ReviewRequestDto requestDto){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(reviewService.postReview(companyId , requestDto));
@@ -60,7 +60,7 @@ public class ReviewController {
     @PutMapping("/reviews/{reviewId}")
     @PreAuthorize("hasRole('APPLICANT')")
     public ResponseEntity<ReviewResponseDto> updateReviewById(@PathVariable Long reviewId,
-                                                   @RequestBody ReviewRequestDto requestDto){
+                                                   @Valid @RequestBody ReviewRequestDto requestDto){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(reviewService.updateReviewById(reviewId , requestDto));

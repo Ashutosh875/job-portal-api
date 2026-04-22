@@ -2,8 +2,6 @@ package com.ashutosh.jobApp.controller;
 
 import com.ashutosh.jobApp.dto.response.ApplicantResponseDto;
 import com.ashutosh.jobApp.dto.response.JobResponseDto;
-import com.ashutosh.jobApp.entity.Applicant;
-import com.ashutosh.jobApp.entity.Job;
 import com.ashutosh.jobApp.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +26,7 @@ public class ApplicationController {
     @PreAuthorize("hasRole('APPLICANT')")
     public ResponseEntity<JobResponseDto> applyToJob(@PathVariable Long jobId){
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(applicationService.applyToJob(jobId));
     }
 

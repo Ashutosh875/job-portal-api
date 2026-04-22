@@ -4,7 +4,6 @@ import com.ashutosh.jobApp.dto.request.RegisterApplicantDto;
 import com.ashutosh.jobApp.dto.request.RegisterCompanyDto;
 import com.ashutosh.jobApp.dto.response.AuthResponseDto;
 import com.ashutosh.jobApp.dto.request.LoginRequest;
-import com.ashutosh.jobApp.dto.request.RegisterRequest;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.entity.User;
