@@ -5,6 +5,7 @@ import com.ashutosh.jobApp.dto.response.JobResponseDto;
 import com.ashutosh.jobApp.entity.Applicant;
 import com.ashutosh.jobApp.entity.Company;
 import com.ashutosh.jobApp.entity.Job;
+import com.ashutosh.jobApp.exception.DuplicateApplicationException;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.mapper.ApplicantMapper;
 import com.ashutosh.jobApp.mapper.JobMapper;
@@ -51,6 +52,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
         Job job = getJobById(jobId);
+
+        if(job.getApplicants().contains(applicant)){
+            log.warn("Applicant {} attempted to apply to same job {} again" , applicant.getUser().getEmail() ,jobId);
+            throw new DuplicateApplicationException("You have already applied to this job");
+        }
 
         log.info("Applicant with email: {} requested to apply for job with id : {}", applicant.getUser().getEmail(),jobId);
 

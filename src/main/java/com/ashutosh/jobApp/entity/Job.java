@@ -35,7 +35,8 @@ public class Job extends BaseEntity {
     @JoinTable(
             name = "job_applicant",
             joinColumns = @JoinColumn(name = "job_id"),
-            inverseJoinColumns = @JoinColumn(name = "applicant_id")
+            inverseJoinColumns = @JoinColumn(name = "applicant_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"job_id" , "applicant_id"})
     )
     private List<Applicant> applicants = new ArrayList<>();
 

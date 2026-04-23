@@ -99,6 +99,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error , HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DuplicateApplicationException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateApplicationException(DuplicateApplicationException e ,
+                                                                             HttpServletRequest request){
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error , HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericExceptions(Exception e ,
                                                                  HttpServletRequest request){
