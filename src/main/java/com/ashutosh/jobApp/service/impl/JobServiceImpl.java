@@ -11,6 +11,7 @@ import com.ashutosh.jobApp.service.JobService;
 import com.ashutosh.jobApp.exception.ResourceNotFoundException;
 import com.ashutosh.jobApp.specification.JobSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
@@ -40,12 +42,15 @@ public class JobServiceImpl implements JobService {
 
         Company company = companyService.getAuthenticatedCompany();
 
+        log.info("Company with email: {} is trying to post a job" , company.getUser().getEmail());
+
         Job job = jobMapper.toEntity(jobRequestDto);
 
         company.addJob(job);
 
-        return jobMapper
-                .toResponse(jobRepository.save(job));
+        Job saved = jobRepository.save(job);
+        log.info("Job posted successfully with id: {}", saved.getId());
+        return jobMapper.toResponse(saved);
     }
 
     @Override
@@ -63,6 +68,7 @@ public class JobServiceImpl implements JobService {
         if( maxSalary != null) spec = spec.and(JobSpecification.hasMaxSalary(maxSalary));
         if( title != null) spec = spec.and(JobSpecification.hasTitle(title));
 
+        log.info("searching jobs with location : {} , min-salary : {} , max-salary : {} and title : {}" ,location,minSalary,maxSalary,title);
         return jobRepository
                 .findAll(spec , pageable)
                 .map(jobMapper::toResponse);
@@ -71,6 +77,9 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional(readOnly = true)
     public JobResponseDto findJobById(Long id) {
+
+        log.info("searching job by id : {}" ,id);
+
         return jobRepository.findById(id)
                 .map(jobMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Job with id : " + id + " Not found"));
@@ -80,6 +89,9 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional(readOnly = true)
     public Page<JobResponseDto> findAllJobsByCompany(Long companyId , Pageable pageable) {
+
+        log.info("searching all jobs by company id : {}" ,companyId);
+
         return jobRepository
                 .findAllByCompanyId(companyId , pageable)
                 .map(jobMapper::toResponse);
@@ -91,9 +103,12 @@ public class JobServiceImpl implements JobService {
 
         Company company = companyService.getAuthenticatedCompany();
 
+        log.info("Company with email: {} is trying to update job" , company.getUser().getEmail());
+
         Job job = getJobById(jobId);
 
         if(!job.getCompany().getId().equals(company.getId())) {
+            log.warn("Unauthorized attempt to update job with id : {} by Company : {}" , jobId ,company.getName());
             throw new AccessDeniedException("Access Denied");
         }
 
@@ -119,6 +134,7 @@ public class JobServiceImpl implements JobService {
         Company company = companyService.getAuthenticatedCompany();
 
         if(!job.getCompany().getId().equals(company.getId())) {
+            log.warn("Unauthorized attempt to delete job with id : {} by Company : {}" , jobId ,company.getName());
             throw new AccessDeniedException("Access Denied");
         }
 

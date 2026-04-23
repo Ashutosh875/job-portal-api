@@ -14,6 +14,7 @@ import com.ashutosh.jobApp.service.ApplicantService;
 import com.ashutosh.jobApp.service.ApplicationService;
 import com.ashutosh.jobApp.service.CompanyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicantService applicantService;
@@ -50,9 +52,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         Applicant applicant = applicantService.getAuthenticatedApplicant();
         Job job = getJobById(jobId);
 
-        job.addApplicant(applicant);
+        log.info("Applicant with email: {} requested to apply for job with id : {}", applicant.getUser().getEmail(),jobId);
 
-        return jobMapper.toResponse(jobRepository.save(job));
+        job.addApplicant(applicant);
+        Job appliedJob = jobRepository.save(job);
+        log.info("Applicant with email: {} successfully applied for job with id : {}", applicant.getUser().getEmail(),jobId);
+        return jobMapper.toResponse(appliedJob);
     }
 
     @Transactional(
@@ -64,12 +69,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
         Job job = getJobById(jobId);
+        log.info("Applicant with email: {} requested to withdraw application for job with id : {}", applicant.getUser().getEmail(),jobId);
 
         if(!job.getApplicants().contains(applicant)){
+            log.warn("Applicant {} attempted to withdraw from job id {} but no application found", applicant.getUser().getEmail(), jobId);
             throw new ResourceNotFoundException("No Application Found");
         }
 
         job.removeApplicant(applicant);
+        log.info("Applicant with email: {} successfully withdrawn application for job with id : {}", applicant.getUser().getEmail(),jobId);
         jobRepository.save(job);
     }
 
@@ -77,7 +85,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Page<JobResponseDto> getApplicationsOfApplicant(Pageable pageable) {
         Applicant applicant = applicantService.getAuthenticatedApplicant();
-
+        log.info("fetching the applications for applicant : {}",applicant.getUser().getEmail());
         return jobRepository
                 .findJobsByApplicantId(applicant.getId() , pageable)
                 .map(jobMapper::toResponse);
@@ -89,8 +97,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Company company = companyService.getAuthenticatedCompany();
         Job job = getJobById(jobId);
-
+        log.info("fetching the applicants for job id : {}",jobId);
         if(!company.getId().equals(job.getCompany().getId())){
+            log.warn("Unauthorized access to fetch applicants for job id {} by company {}",jobId,company.getUser().getEmail());
             throw new AccessDeniedException("Access Denied");
         }
 

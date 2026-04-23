@@ -9,6 +9,7 @@ import com.ashutosh.jobApp.mapper.ApplicantMapper;
 import com.ashutosh.jobApp.repository.ApplicantRepository;
 import com.ashutosh.jobApp.repository.UserRepository;
 import com.ashutosh.jobApp.service.ApplicantService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Isolation;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
@@ -41,17 +43,26 @@ public class ApplicantServiceImpl implements ApplicantService {
 
         Applicant applicant = getAuthenticatedApplicant();
 
+        log.info("Applicant with email: {} trying to update profile",applicant.getUser().getEmail());
+
         applicant.setName(applicantRequestDto.getName());
         applicant.setExperience(applicantRequestDto.getExperience());
         applicant.setJobTitle(applicantRequestDto.getJobTitle());
 
+        Applicant updatedApplicantProfile = applicantRepository.save(applicant);
+
+        log.info("Applicant with email: {} successfully updated profile",applicant.getUser().getEmail());
+
         return applicantMapper
-                .toResponseDto(applicantRepository.save(applicant));
+                .toResponseDto(updatedApplicantProfile);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ApplicantResponseDto getApplicantById(Long applicantId) {
+
+        log.info("fetching Applicant by id : {}", applicantId);
+
         return applicantRepository.findById(applicantId)
                 .map(applicantMapper::toResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("No applicant found with id : " + applicantId));
@@ -61,7 +72,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public void deleteApplicant(){
         Applicant applicant = getAuthenticatedApplicant();
+
+        log.info("Applicant with email: {} requested account deactivation", applicant.getUser().getEmail());
         applicant.setActive(false);
+        log.info("Applicant with email: {} successfully deactivated", applicant.getUser().getEmail());
         applicantRepository.save(applicant);
     }
 }

@@ -1,6 +1,7 @@
 package com.ashutosh.jobApp.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -33,6 +35,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDatabaseException(DataAccessException e ,
                                                                  HttpServletRequest request){
 
+        log.error("Database error at {}: {}", request.getRequestURI(), e.getMessage());
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "A database error occurred",
@@ -56,6 +59,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e,
                                                                 HttpServletRequest request){
+
+        log.warn("Failed login attempt for path: {}", request.getRequestURI());
 
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
@@ -97,6 +102,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericExceptions(Exception e ,
                                                                  HttpServletRequest request){
+
+        log.error("unexpected error at {} : {}" , request.getRequestURI() , e.getMessage());
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Something Went Wrong",

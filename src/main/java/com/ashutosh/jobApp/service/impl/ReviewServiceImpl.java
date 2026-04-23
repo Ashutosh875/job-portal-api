@@ -12,6 +12,7 @@ import com.ashutosh.jobApp.entity.Review;
 import com.ashutosh.jobApp.repository.ReviewRepository;
 import com.ashutosh.jobApp.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -45,6 +47,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<ReviewResponseDto> getAllReviews(Long companyId , Pageable pageable) {
 
+        log.info("fetching all the reviews for company with id: {}" , companyId);
+
         return reviewRepository
                 .findByCompanyId(companyId , pageable)
                 .map(reviewMapper::toResponseDto);
@@ -55,17 +59,26 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponseDto postReview(Long companyId, ReviewRequestDto requestDto) {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
+
+        log.info("Applicant with email: {} requested to post a review for company id : {}",applicant.getUser().getEmail(),companyId);
+
         Review review = reviewMapper.toEntity(requestDto);
         review.setApplicant(applicant);
         Company company = getCompanyById(companyId);
         company.addReview(review);
 
-        return reviewMapper.toResponseDto(reviewRepository.save(review));
+        Review postedReview = reviewRepository.save(review);
+
+        log.info("Applicant with email: {} successfully posted a review for company id : {}",applicant.getUser().getEmail(),companyId);
+
+        return reviewMapper.toResponseDto(postedReview);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReviewResponseDto getReviewById(Long reviewId) {
+
+        log.info("fetching review with id : {}" , reviewId);
         return reviewMapper.toResponseDto(findReviewById(reviewId));
     }
 
@@ -75,9 +88,12 @@ public class ReviewServiceImpl implements ReviewService {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
 
+        log.info("Applicant with email: {} requested to update a review with id : {}",applicant.getUser().getEmail(),reviewId);
+
         Review review = findReviewById(reviewId);
 
         if(!applicant.getId().equals(review.getApplicant().getId())){
+            log.warn("Unauthorized access to update a review with id {} by Applicant with email: {}" , reviewId ,applicant.getUser().getEmail() );
             throw new AccessDeniedException("No Access To Update this Review");
         }
 
@@ -85,7 +101,11 @@ public class ReviewServiceImpl implements ReviewService {
         review.setRating(requestDto.getRating());
         review.setTitle(requestDto.getTitle());
 
-        return reviewMapper.toResponseDto(reviewRepository.save(review));
+        Review updatedReview = reviewRepository.save(review);
+
+        log.info("Applicant with email: {} successfully updated a review with id : {}",applicant.getUser().getEmail(),reviewId);
+
+        return reviewMapper.toResponseDto(updatedReview);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -94,12 +114,16 @@ public class ReviewServiceImpl implements ReviewService {
 
         Applicant applicant = applicantService.getAuthenticatedApplicant();
 
+        log.info("Applicant with email: {} requested to delete a review with id : {}",applicant.getUser().getEmail(),reviewId);
+
         Review review = findReviewById(reviewId);
 
         if(!applicant.getId().equals(review.getApplicant().getId())){
+            log.warn("Unauthorized access to Delete a review with id {} by Applicant with email: {}" , reviewId ,applicant.getUser().getEmail() );
             throw new AccessDeniedException("No Access To Delete this Review");
         }
 
+        log.info("Applicant with email: {} successfully deleted a review with id : {}",applicant.getUser().getEmail(),reviewId);
         reviewRepository.delete(review);
     }
 
