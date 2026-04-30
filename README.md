@@ -1,5 +1,7 @@
 # Job Portal REST API
 
+**Live API:** https://job-portal-api-40li.onrender.com/swagger-ui/index.html
+
 A production-style REST API built with Java 21 and Spring Boot, inspired by platforms
 like Glassdoor and Naukri. Features JWT-based authentication, role-based access control,
 ownership-based authorization, dynamic job search with JPA Specification, pagination,
@@ -170,9 +172,8 @@ src/main/java/com/ashutosh/jobApp/
  
 ---
 
-## TODO
-
-- [ ] Write unit and integration tests
+## Testing
+Unit tests written with JUnit 5 and Mockito covering core service logic.
 
 ## Author
 
